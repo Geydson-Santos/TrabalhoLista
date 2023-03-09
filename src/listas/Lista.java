@@ -181,26 +181,46 @@ public class Lista {
 	}// fim do m�todo estaVazia
 		// gera sa�da do conte�do de List
 
-	public void print() {
-		if (estaVazia()) {
-			System.out.printf("Lista Vazia %s\n", nome);
-			System.out.println(imprimeTamanho());
-			return;
-		}// fim do if
-		
-		System.out.printf("A lista %s �: ", nome);
-		ListaNo current = primeiroNo;
-		// enquanto n�o estiver no fim da lista, gera sa�da dos dados do n�
-		// atual
-		while (current != null) {
-			System.out.printf("%s -> ", current.data);
-			current = current.proximoNo;
-		}// fim do While
-		System.out.printf("\n");
-		System.out.println(imprimeTamanho());
+	public String print() {
+            String saida = "";
+            if (estaVazia()) {
+                saida += String.format("Lista Vazia %s\n", nome);
+                //System.out.printf("Lista Vazia %s\n", nome);
+                saida += imprimeTamanho() + "\n";
+                //System.out.println(imprimeTamanho());
+                System.out.print(saida);
+                return saida;
+            }// fim do if
+            
+            saida += String.format("A lista %s é: ", nome);
+            //System.out.printf("A lista %s �: ", nome);
+            ListaNo current = primeiroNo;
+            // enquanto n�o estiver no fim da lista, gera sa�da dos dados do n�
+            // atual
+            while (current != null) {
+                saida += String.format("%s -> ", current.data);
+                //System.out.printf("%s -> ", current.data);
+                current = current.proximoNo;
+            }// fim do While
+            saida += "\n";
+            //System.out.printf("\n");
+            saida += imprimeTamanho() + "\n";
+            //System.out.println(imprimeTamanho());
+            System.out.print(saida);
+            return saida;
 	} // fim do m�todo print
 	
 	public String imprimeTamanho(){
 		return "Tamanho da Lista: "+this.tamanhoLista;
 	}
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+        
+        
 }// fim da classe List

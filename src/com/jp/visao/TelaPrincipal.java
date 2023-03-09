@@ -5,11 +5,13 @@
 package com.jp.visao;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
+import listas.EmptyListException;
 import listas.Lista;
 
 /**
@@ -23,6 +25,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
      */
     Lista lista = null;
     
+    enum Inserir {
+        INICIO, FIM, POSICAO
+    };
+    
     public TelaPrincipal() {
         lista = new Lista();
         
@@ -30,6 +36,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         adicionarTela(jInternalFrameTelaInicial);
         ImageIcon imagem = new ImageIcon("./src/com/jp/icones/Chevron Left.png");
+        imagem.setImage(imagem.getImage().getScaledInstance(25, 25, Image.SCALE_REPLICATE));
+        jButtonVoltar.setIcon(imagem);
     }
     
     private void adicionarTela(JInternalFrame tela){
@@ -38,6 +46,54 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jDesktopPane1.removeAll();
         jDesktopPane1.add(tela);
         tela.setVisible(true);
+    }
+    
+    public void inserir(Inserir inserir){
+        String inputNumero = "";
+        String inputPosicao = "";
+        
+        boolean eNumero = false;
+        boolean passou = false;
+        
+        int numero = 0;
+        while(!eNumero && inputNumero != null && inputPosicao != null){
+            if(!passou) inputNumero = JOptionPane.showInputDialog("Digite o elemento a ser inserido:");
+            if(inputNumero != null && !inputNumero.equals("")){
+                try{
+                    if(!passou) numero = Integer.parseInt(inputNumero);
+                    passou = true;
+                    switch (inserir) {
+                        case INICIO:
+                            lista.insereNoInicio(numero);
+                            JOptionPane.showMessageDialog(null, String.format("Número %d inserido!", numero));
+                            eNumero = true;
+                            break;
+                        case FIM:
+                            lista.insereNoFim(numero);
+                            JOptionPane.showMessageDialog(null, String.format("Número %d inserido!", numero));
+                            eNumero = true;
+                            break;
+                        case POSICAO:
+                            boolean ePosicao = false;
+                            while(!ePosicao && (inputPosicao = JOptionPane.showInputDialog(String.format("Informe a posição do elemento %d.", numero))) != null){
+                                //inputPosicao = JOptionPane.showInputDialog("Digite o elemento a ser inserido:");
+                                
+                                int posicao = Integer.parseInt(inputPosicao);
+                                
+                                lista.insertAtPosicao(posicao, numero);
+                                JOptionPane.showMessageDialog(null, String.format("Número %d inserido na posição %d!", numero, posicao));
+                                
+                                ePosicao = true;
+                            }
+                            eNumero = true;
+                            break;
+                    }
+                }catch(NumberFormatException nfe){
+                    JOptionPane.showMessageDialog(null, "Por favor, informe um número.");
+                }
+            }
+        }
+        
     }
 
     /**
@@ -50,16 +106,23 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         jInternalFrameTelaInicial = new javax.swing.JInternalFrame();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        jButtonInserir = new javax.swing.JButton();
+        jButtonRemover = new javax.swing.JButton();
+        jButtonBuscar = new javax.swing.JButton();
+        jButtonImprimir = new javax.swing.JButton();
         jInternalFrameInserir = new javax.swing.JInternalFrame();
-        jButton7 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
+        jButtonInserirInicio = new javax.swing.JButton();
+        jButtonInserirFim = new javax.swing.JButton();
+        jButtonInserirPorPosicao = new javax.swing.JButton();
         jButtonVoltar = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
         jInternalFrameRemover = new javax.swing.JInternalFrame();
+        jButtonRemoverInicio = new javax.swing.JButton();
+        jButtonRemoverFim = new javax.swing.JButton();
+        jButtonRemoverPorValor = new javax.swing.JButton();
+        jButtonRemoverPorPosicao = new javax.swing.JButton();
+        jButtonVoltar2 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jDesktopPane1 = new javax.swing.JDesktopPane();
@@ -68,99 +131,138 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jInternalFrameTelaInicial.setPreferredSize(new java.awt.Dimension(611, 326));
         jInternalFrameTelaInicial.setVisible(true);
 
-        jButton1.setBackground(new java.awt.Color(204, 204, 204));
-        jButton1.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(51, 51, 51));
-        jButton1.setText("Inserir Novo Elemento");
-        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton1.setFocusable(false);
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonInserir.setBackground(new java.awt.Color(204, 204, 204));
+        jButtonInserir.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jButtonInserir.setForeground(new java.awt.Color(51, 51, 51));
+        jButtonInserir.setText("Inserir Novo Elemento");
+        jButtonInserir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonInserir.setFocusable(false);
+        jButtonInserir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonInserirActionPerformed(evt);
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(204, 204, 204));
-        jButton2.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(51, 51, 51));
-        jButton2.setText("Remover Elemento");
-        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton2.setFocusable(false);
+        jButtonRemover.setBackground(new java.awt.Color(204, 204, 204));
+        jButtonRemover.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jButtonRemover.setForeground(new java.awt.Color(51, 51, 51));
+        jButtonRemover.setText("Remover Elemento");
+        jButtonRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonRemover.setFocusable(false);
+        jButtonRemover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRemoverActionPerformed(evt);
+            }
+        });
 
-        jButton3.setBackground(new java.awt.Color(204, 204, 204));
-        jButton3.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(51, 51, 51));
-        jButton3.setText("Buscar Elemento");
-        jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton3.setFocusable(false);
+        jButtonBuscar.setBackground(new java.awt.Color(204, 204, 204));
+        jButtonBuscar.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jButtonBuscar.setForeground(new java.awt.Color(51, 51, 51));
+        jButtonBuscar.setText("Buscar Elemento");
+        jButtonBuscar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonBuscar.setFocusable(false);
+        jButtonBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBuscarActionPerformed(evt);
+            }
+        });
 
-        jButton4.setBackground(new java.awt.Color(204, 204, 204));
-        jButton4.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jButton4.setForeground(new java.awt.Color(51, 51, 51));
-        jButton4.setText("Imprimir Elementos");
-        jButton4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton4.setFocusable(false);
+        jButtonImprimir.setBackground(new java.awt.Color(204, 204, 204));
+        jButtonImprimir.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jButtonImprimir.setForeground(new java.awt.Color(51, 51, 51));
+        jButtonImprimir.setText("Imprimir Elementos");
+        jButtonImprimir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonImprimir.setFocusable(false);
+        jButtonImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonImprimirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jInternalFrameTelaInicialLayout = new javax.swing.GroupLayout(jInternalFrameTelaInicial.getContentPane());
         jInternalFrameTelaInicial.getContentPane().setLayout(jInternalFrameTelaInicialLayout);
         jInternalFrameTelaInicialLayout.setHorizontalGroup(
             jInternalFrameTelaInicialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jInternalFrameTelaInicialLayout.createSequentialGroup()
-                .addGap(91, 91, 91)
+                .addGap(92, 92, 92)
                 .addGroup(jInternalFrameTelaInicialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButtonInserir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(52, 52, 52)
                 .addGroup(jInternalFrameTelaInicialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(104, Short.MAX_VALUE))
+                    .addComponent(jButtonRemover, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(109, Short.MAX_VALUE))
         );
         jInternalFrameTelaInicialLayout.setVerticalGroup(
             jInternalFrameTelaInicialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jInternalFrameTelaInicialLayout.createSequentialGroup()
-                .addGap(48, 48, 48)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jInternalFrameTelaInicialLayout.createSequentialGroup()
+                .addContainerGap(69, Short.MAX_VALUE)
                 .addGroup(jInternalFrameTelaInicialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButtonInserir, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonRemover, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(38, 38, 38)
                 .addGroup(jInternalFrameTelaInicialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(84, Short.MAX_VALUE))
+                    .addComponent(jButtonBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(63, 63, 63))
         );
 
         jInternalFrameInserir.setBorder(null);
         jInternalFrameInserir.setPreferredSize(new java.awt.Dimension(611, 326));
         jInternalFrameInserir.setVisible(true);
 
-        jButton7.setBackground(new java.awt.Color(204, 204, 204));
-        jButton7.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jButton7.setForeground(new java.awt.Color(51, 51, 51));
-        jButton7.setText("Inserir por Posição");
-        jButton7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton7.setFocusable(false);
+        jButtonInserirInicio.setBackground(new java.awt.Color(204, 204, 204));
+        jButtonInserirInicio.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jButtonInserirInicio.setForeground(new java.awt.Color(51, 51, 51));
+        jButtonInserirInicio.setText("Inserir no Início");
+        jButtonInserirInicio.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonInserirInicio.setFocusable(false);
+        jButtonInserirInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonInserirInicioActionPerformed(evt);
+            }
+        });
 
-        jButton8.setBackground(new java.awt.Color(204, 204, 204));
-        jButton8.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jButton8.setForeground(new java.awt.Color(51, 51, 51));
-        jButton8.setText("Inserir no Início");
-        jButton8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton8.setFocusable(false);
+        jButtonInserirFim.setBackground(new java.awt.Color(204, 204, 204));
+        jButtonInserirFim.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jButtonInserirFim.setForeground(new java.awt.Color(51, 51, 51));
+        jButtonInserirFim.setText("Inserir no Fim");
+        jButtonInserirFim.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonInserirFim.setFocusable(false);
+        jButtonInserirFim.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonInserirFimActionPerformed(evt);
+            }
+        });
 
-        jButton9.setBackground(new java.awt.Color(204, 204, 204));
-        jButton9.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jButton9.setForeground(new java.awt.Color(51, 51, 51));
-        jButton9.setText("Inserir no Fim");
-        jButton9.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton9.setFocusable(false);
+        jButtonInserirPorPosicao.setBackground(new java.awt.Color(204, 204, 204));
+        jButtonInserirPorPosicao.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jButtonInserirPorPosicao.setForeground(new java.awt.Color(51, 51, 51));
+        jButtonInserirPorPosicao.setText("Inserir por Posição");
+        jButtonInserirPorPosicao.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonInserirPorPosicao.setFocusable(false);
+        jButtonInserirPorPosicao.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonInserirPorPosicaoActionPerformed(evt);
+            }
+        });
 
+        jButtonVoltar.setBackground(new java.awt.Color(0, 102, 102));
+        jButtonVoltar.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jButtonVoltar.setForeground(new java.awt.Color(255, 255, 255));
         jButtonVoltar.setText("Voltar");
+        jButtonVoltar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonVoltar.setFocusable(false);
         jButtonVoltar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonVoltarActionPerformed(evt);
             }
         });
+
+        jLabel2.setFont(new java.awt.Font("Century Gothic", 0, 24)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("Inserir Novo Elemento");
 
         javax.swing.GroupLayout jInternalFrameInserirLayout = new javax.swing.GroupLayout(jInternalFrameInserir.getContentPane());
         jInternalFrameInserir.getContentPane().setLayout(jInternalFrameInserirLayout);
@@ -173,37 +275,112 @@ public class TelaPrincipal extends javax.swing.JFrame {
                         .addComponent(jButtonVoltar)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jInternalFrameInserirLayout.createSequentialGroup()
-                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonInserirInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonInserirFim, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(8, 8, 8)
-                        .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                        .addComponent(jButtonInserirPorPosicao, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
                         .addGap(27, 27, 27))))
+            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jInternalFrameInserirLayout.setVerticalGroup(
             jInternalFrameInserirLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jInternalFrameInserirLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addGap(15, 15, 15)
+                .addComponent(jLabel2)
+                .addGap(18, 18, 18)
                 .addComponent(jButtonVoltar)
-                .addGap(67, 67, 67)
+                .addGap(58, 58, 58)
                 .addGroup(jInternalFrameInserirLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(124, Short.MAX_VALUE))
+                    .addComponent(jButtonInserirPorPosicao, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonInserirInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonInserirFim, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(84, Short.MAX_VALUE))
         );
 
         jInternalFrameRemover.setVisible(true);
+
+        jButtonRemoverInicio.setBackground(new java.awt.Color(204, 204, 204));
+        jButtonRemoverInicio.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jButtonRemoverInicio.setForeground(new java.awt.Color(51, 51, 51));
+        jButtonRemoverInicio.setText("Remover no Início");
+        jButtonRemoverInicio.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonRemoverInicio.setFocusable(false);
+
+        jButtonRemoverFim.setBackground(new java.awt.Color(204, 204, 204));
+        jButtonRemoverFim.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jButtonRemoverFim.setForeground(new java.awt.Color(51, 51, 51));
+        jButtonRemoverFim.setText("Remover no Fim");
+        jButtonRemoverFim.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonRemoverFim.setFocusable(false);
+
+        jButtonRemoverPorValor.setBackground(new java.awt.Color(204, 204, 204));
+        jButtonRemoverPorValor.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jButtonRemoverPorValor.setForeground(new java.awt.Color(51, 51, 51));
+        jButtonRemoverPorValor.setText("Remover por Valor");
+        jButtonRemoverPorValor.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonRemoverPorValor.setFocusable(false);
+
+        jButtonRemoverPorPosicao.setBackground(new java.awt.Color(204, 204, 204));
+        jButtonRemoverPorPosicao.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
+        jButtonRemoverPorPosicao.setForeground(new java.awt.Color(51, 51, 51));
+        jButtonRemoverPorPosicao.setText("Remover por Posição");
+        jButtonRemoverPorPosicao.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonRemoverPorPosicao.setFocusable(false);
+
+        jButtonVoltar2.setBackground(new java.awt.Color(0, 102, 102));
+        jButtonVoltar2.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jButtonVoltar2.setForeground(new java.awt.Color(255, 255, 255));
+        jButtonVoltar2.setText("Voltar");
+        jButtonVoltar2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonVoltar2.setFocusable(false);
+        jButtonVoltar2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonVoltar2ActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Century Gothic", 0, 24)); // NOI18N
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setText("Remover Elemento");
 
         javax.swing.GroupLayout jInternalFrameRemoverLayout = new javax.swing.GroupLayout(jInternalFrameRemover.getContentPane());
         jInternalFrameRemover.getContentPane().setLayout(jInternalFrameRemoverLayout);
         jInternalFrameRemoverLayout.setHorizontalGroup(
             jInternalFrameRemoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jInternalFrameRemoverLayout.createSequentialGroup()
+                .addGroup(jInternalFrameRemoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jInternalFrameRemoverLayout.createSequentialGroup()
+                        .addGap(89, 89, 89)
+                        .addGroup(jInternalFrameRemoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButtonRemoverInicio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButtonRemoverPorValor, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(52, 52, 52)
+                        .addGroup(jInternalFrameRemoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButtonRemoverFim, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonRemoverPorPosicao, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jInternalFrameRemoverLayout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addComponent(jButtonVoltar2)))
+                .addContainerGap(112, Short.MAX_VALUE))
+            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jInternalFrameRemoverLayout.setVerticalGroup(
             jInternalFrameRemoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jInternalFrameRemoverLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonVoltar2)
+                .addGap(18, 18, 18)
+                .addGroup(jInternalFrameRemoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonRemoverInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonRemoverFim, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(38, 38, 38)
+                .addGroup(jInternalFrameRemoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonRemoverPorValor, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonRemoverPorPosicao, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(42, 42, 42))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -255,15 +432,63 @@ public class TelaPrincipal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButtonInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInserirActionPerformed
         // TODO add your handling code here:
         adicionarTela(jInternalFrameInserir);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jButtonInserirActionPerformed
 
     private void jButtonVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVoltarActionPerformed
         // TODO add your handling code here:
         adicionarTela(jInternalFrameTelaInicial);
     }//GEN-LAST:event_jButtonVoltarActionPerformed
+
+    private void jButtonVoltar2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVoltar2ActionPerformed
+        // TODO add your handling code here:
+        adicionarTela(jInternalFrameTelaInicial);
+    }//GEN-LAST:event_jButtonVoltar2ActionPerformed
+
+    private void jButtonRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRemoverActionPerformed
+        // TODO add your handling code here:
+        adicionarTela(jInternalFrameRemover);
+    }//GEN-LAST:event_jButtonRemoverActionPerformed
+
+    private void jButtonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuscarActionPerformed
+        // TODO add your handling code here:
+        String input = JOptionPane.showInputDialog("Digite o elemento a ser buscado:");
+        if(input != null && !input.equals("")){
+            try{
+                int numero = Integer.parseInt(input);
+                if(lista.buscaElemento(numero)) JOptionPane.showMessageDialog(null, String.format("O número %d foi encontrado na lista %s!", numero, lista.getNome()));
+                else JOptionPane.showMessageDialog(null, String.format("O número %d não foi encontrado na lista %s!", numero, lista.getNome()));
+            }catch(NumberFormatException nfe){
+                JOptionPane.showMessageDialog(null, "Por favor, informe um número.");
+                jButtonBuscar.doClick();
+            }catch(EmptyListException ele){
+                JOptionPane.showMessageDialog(null, ele.getMessage());
+            }
+        }
+        
+    }//GEN-LAST:event_jButtonBuscarActionPerformed
+
+    private void jButtonImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonImprimirActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(null, lista.print());
+    }//GEN-LAST:event_jButtonImprimirActionPerformed
+
+    private void jButtonInserirInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInserirInicioActionPerformed
+        // TODO add your handling code here:
+        inserir(Inserir.INICIO);
+    }//GEN-LAST:event_jButtonInserirInicioActionPerformed
+
+    private void jButtonInserirFimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInserirFimActionPerformed
+        // TODO add your handling code here:
+        inserir(Inserir.FIM);
+    }//GEN-LAST:event_jButtonInserirFimActionPerformed
+
+    private void jButtonInserirPorPosicaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInserirPorPosicaoActionPerformed
+        // TODO add your handling code here:
+        inserir(Inserir.POSICAO);
+    }//GEN-LAST:event_jButtonInserirPorPosicaoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -302,19 +527,26 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
+    private javax.swing.JButton jButtonBuscar;
+    private javax.swing.JButton jButtonImprimir;
+    private javax.swing.JButton jButtonInserir;
+    private javax.swing.JButton jButtonInserirFim;
+    private javax.swing.JButton jButtonInserirInicio;
+    private javax.swing.JButton jButtonInserirPorPosicao;
+    private javax.swing.JButton jButtonRemover;
+    private javax.swing.JButton jButtonRemoverFim;
+    private javax.swing.JButton jButtonRemoverInicio;
+    private javax.swing.JButton jButtonRemoverPorPosicao;
+    private javax.swing.JButton jButtonRemoverPorValor;
     private javax.swing.JButton jButtonVoltar;
+    private javax.swing.JButton jButtonVoltar2;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JInternalFrame jInternalFrameInserir;
     private javax.swing.JInternalFrame jInternalFrameRemover;
     private javax.swing.JInternalFrame jInternalFrameTelaInicial;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }
