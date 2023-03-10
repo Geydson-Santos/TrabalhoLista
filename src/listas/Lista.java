@@ -129,7 +129,7 @@ public class Lista {
                                 for(int i = 1; i < (posicao - 1); i++){
                                     current = current.proximoNo;
                                 }
-                                removedItem = current.data;
+                                removedItem = current.proximoNo.data;
                                 
                                 current.proximoNo = current.proximoNo.proximoNo;
                                 tamanhoLista--;
@@ -146,11 +146,15 @@ public class Lista {
                 throw new EmptyListException(nome); //lan�a excess�o se List estiver vazia
             }
             
-            ListaNo current = primeiroNo; 
-            while(current.proximoNo.data != elemento && current.proximoNo.proximoNo != null){
+            ListaNo current = primeiroNo;
+            
+            if(current.data == elemento) return removeNoInicio();
+            
+            while(current.proximoNo != null && current.proximoNo.proximoNo != null && current.proximoNo.data != elemento){
                 current = current.proximoNo;
             }
-            if(current.proximoNo.data == elemento){
+            //System.out.println(current.proximoNo.data);
+            if(current.proximoNo != null && current.proximoNo.data == elemento){
                 current.proximoNo = current.proximoNo.proximoNo;
                 tamanhoLista--;
                 return elemento;

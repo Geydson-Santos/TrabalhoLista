@@ -7,6 +7,7 @@ package com.jp.visao;
 import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.lang.invoke.MethodHandles;
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
@@ -27,7 +28,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
     
     enum Inserir {
         INICIO, FIM, POSICAO
-    };
+    }
+    
+    enum Remover {
+        INICIO, FIM, VALOR, POSICAO
+    }
     
     public TelaPrincipal() {
         lista = new Lista();
@@ -38,6 +43,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         ImageIcon imagem = new ImageIcon("./src/com/jp/icones/Chevron Left.png");
         imagem.setImage(imagem.getImage().getScaledInstance(25, 25, Image.SCALE_REPLICATE));
         jButtonVoltar.setIcon(imagem);
+        jButtonVoltar2.setIcon(imagem);
     }
     
     private void adicionarTela(JInternalFrame tela){
@@ -94,6 +100,84 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         }
         
+    }
+    
+    public void remover(Remover remover){
+        switch (remover) {
+            case INICIO:
+                try {
+                    int numero = Integer.parseInt(lista.removeNoInicio().toString());
+                    JOptionPane.showMessageDialog(null, String.format("O número %d foi removida da lista %s", numero, lista.getNome()));
+                } catch (NumberFormatException nfe) {
+                    nfe.printStackTrace();
+                }catch(EmptyListException ele){
+                    JOptionPane.showMessageDialog(null, ele.getMessage());
+                }
+                break;
+            case FIM:
+                try {
+                    int numero = Integer.parseInt(lista.removeNoFim().toString());
+                    JOptionPane.showMessageDialog(null, String.format("O número %d foi removida da lista %s", numero, lista.getNome()));
+                } catch (NumberFormatException nfe) {
+                    nfe.printStackTrace();
+                }catch(EmptyListException ele){
+                    JOptionPane.showMessageDialog(null, ele.getMessage());
+                }
+                
+                break;
+            case VALOR:
+                boolean eNumero = false;
+                String input = "";
+                while(!eNumero && input != null){
+                    try {
+                        input = JOptionPane.showInputDialog("Digite o número a ser removido:");
+                        if(input != null){
+                            int valor = Integer.parseInt(input);
+
+                            String saida = String.format("O número %d foi removido da lista %s!", valor, lista.getNome());
+                            if(lista.removeFromValor(valor) != null) JOptionPane.showMessageDialog(null, saida);
+                            else JOptionPane.showMessageDialog(null, saida.replace("foi removido da", "não foi encontrado na"));
+                            eNumero = true;
+                        }
+                        
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(null, "Por favor, informe um número.");
+                    }catch(EmptyListException ele){
+                        JOptionPane.showMessageDialog(null, ele.getMessage());
+                    }
+                }
+                
+                break;
+            case POSICAO:
+                boolean ePosicao = false;
+                input = "";
+                while(!ePosicao && input != null){
+                    try {
+                        input = JOptionPane.showInputDialog("Digite a posição do número a ser removido:");
+                        if(input != null){
+                            int posicao = Integer.parseInt(input);
+                            
+                            Object objeto = lista.removeFromPosicao(posicao);
+                            
+                            if(objeto != null) {
+                                int valor = Integer.parseInt(objeto.toString());
+                                String saida = String.format("O número %d foi removido da lista %s!", valor, lista.getNome());
+                                JOptionPane.showMessageDialog(null, saida);
+                            }
+                            else {
+                                JOptionPane.showMessageDialog(null, String.format("A posição %d da lista %s não foi encontrada.", posicao, lista.getNome()));
+                            }
+                            ePosicao = true;
+                        }
+                        
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(null, "Por favor, informe um número.");
+                    }catch(EmptyListException ele){
+                        JOptionPane.showMessageDialog(null, ele.getMessage());
+                    }
+                }
+                break;
+        }
     }
 
     /**
@@ -298,6 +382,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addContainerGap(84, Short.MAX_VALUE))
         );
 
+        jInternalFrameRemover.setBorder(null);
         jInternalFrameRemover.setVisible(true);
 
         jButtonRemoverInicio.setBackground(new java.awt.Color(204, 204, 204));
@@ -306,6 +391,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jButtonRemoverInicio.setText("Remover no Início");
         jButtonRemoverInicio.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButtonRemoverInicio.setFocusable(false);
+        jButtonRemoverInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRemoverInicioActionPerformed(evt);
+            }
+        });
 
         jButtonRemoverFim.setBackground(new java.awt.Color(204, 204, 204));
         jButtonRemoverFim.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
@@ -313,6 +403,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jButtonRemoverFim.setText("Remover no Fim");
         jButtonRemoverFim.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButtonRemoverFim.setFocusable(false);
+        jButtonRemoverFim.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRemoverFimActionPerformed(evt);
+            }
+        });
 
         jButtonRemoverPorValor.setBackground(new java.awt.Color(204, 204, 204));
         jButtonRemoverPorValor.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
@@ -320,6 +415,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jButtonRemoverPorValor.setText("Remover por Valor");
         jButtonRemoverPorValor.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButtonRemoverPorValor.setFocusable(false);
+        jButtonRemoverPorValor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRemoverPorValorActionPerformed(evt);
+            }
+        });
 
         jButtonRemoverPorPosicao.setBackground(new java.awt.Color(204, 204, 204));
         jButtonRemoverPorPosicao.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
@@ -327,6 +427,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jButtonRemoverPorPosicao.setText("Remover por Posição");
         jButtonRemoverPorPosicao.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButtonRemoverPorPosicao.setFocusable(false);
+        jButtonRemoverPorPosicao.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRemoverPorPosicaoActionPerformed(evt);
+            }
+        });
 
         jButtonVoltar2.setBackground(new java.awt.Color(0, 102, 102));
         jButtonVoltar2.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
@@ -362,7 +467,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                     .addGroup(jInternalFrameRemoverLayout.createSequentialGroup()
                         .addGap(28, 28, 28)
                         .addComponent(jButtonVoltar2)))
-                .addContainerGap(112, Short.MAX_VALUE))
+                .addContainerGap(124, Short.MAX_VALUE))
             .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jInternalFrameRemoverLayout.setVerticalGroup(
@@ -489,6 +594,26 @@ public class TelaPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
         inserir(Inserir.POSICAO);
     }//GEN-LAST:event_jButtonInserirPorPosicaoActionPerformed
+
+    private void jButtonRemoverInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRemoverInicioActionPerformed
+        // TODO add your handling code here:
+        remover(Remover.INICIO);
+    }//GEN-LAST:event_jButtonRemoverInicioActionPerformed
+
+    private void jButtonRemoverFimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRemoverFimActionPerformed
+        // TODO add your handling code here:
+        remover(Remover.FIM);
+    }//GEN-LAST:event_jButtonRemoverFimActionPerformed
+
+    private void jButtonRemoverPorValorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRemoverPorValorActionPerformed
+        // TODO add your handling code here:
+        remover(Remover.VALOR);
+    }//GEN-LAST:event_jButtonRemoverPorValorActionPerformed
+
+    private void jButtonRemoverPorPosicaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRemoverPorPosicaoActionPerformed
+        // TODO add your handling code here:
+        remover(Remover.POSICAO);
+    }//GEN-LAST:event_jButtonRemoverPorPosicaoActionPerformed
 
     /**
      * @param args the command line arguments
