@@ -35,7 +35,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
     
     public TelaPrincipal() {
-        lista = new Lista();
+        String nomeDaLista = JOptionPane.showInputDialog("Insira o nome da Lista:");
+        if(!nomeDaLista.equals("")) lista = new Lista(nomeDaLista);
+        else lista = new Lista();
         
         initComponents();
         this.setLocationRelativeTo(null);
